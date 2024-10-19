@@ -2,7 +2,7 @@ use std::{f32::consts::PI, sync::LazyLock, time::Duration};
 
 use iced::{
     gradient::{ColorStop, Linear},
-    widget::{column, container, row, text},
+    widget::{column, container, row},
     Alignment::Center,
     Background, Border, Color, Element, Gradient,
     Length::Fill,
@@ -12,7 +12,7 @@ use iced::{
 use iced_anim::{
     widget::{
         button::{button, danger, primary, Status},
-        checkbox,
+        checkbox, text,
     },
     SpringMotion,
 };
@@ -50,7 +50,17 @@ impl State {
                     button(text("-10"))
                         .on_press_maybe(is_enabled.then_some(Message::Adjust(-10)))
                         .style(danger_gradient),
-                    text(self.counter.to_string()).size(24).width(60.0).center(),
+                    text(self.counter.to_string())
+                        .size(24)
+                        .width(60.0)
+                        .center()
+                        .style(|theme: &Theme| text::Style {
+                            color: match self.counter {
+                                ..0 => Some(theme.palette().danger),
+                                0 => Some(theme.palette().text),
+                                1.. => Some(theme.palette().primary),
+                            },
+                        }),
                     button(text("+10"))
                         .on_press_maybe(is_enabled.then_some(Message::Adjust(10)))
                         .style(success_gradient),
