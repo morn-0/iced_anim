@@ -197,3 +197,30 @@ where
         })
     }
 }
+
+impl<Status, Style> Default for AnimatedState<Status, Style>
+where
+    Status: Default,
+    Style: Default,
+{
+    fn default() -> Self {
+        Self {
+            status: Status::default(),
+            animated_style: RefCell::new(None),
+            motion: SpringMotion::default(),
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn default() {
+        let animated_state = AnimatedState::<f32, String>::default();
+        assert_eq!(animated_state.status, 0.0);
+        assert_eq!(*animated_state.animated_style.borrow(), None);
+        assert_eq!(animated_state.motion, SpringMotion::default());
+    }
+}
