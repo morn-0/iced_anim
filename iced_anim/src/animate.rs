@@ -536,72 +536,6 @@ impl Animate for iced::Background {
     }
 }
 
-impl Animate for iced::widget::button::Style {
-    fn components() -> usize {
-        Option::<iced::Background>::components()
-            + iced::Color::components()
-            + iced::Border::components()
-            + iced::Shadow::components()
-    }
-
-    fn distance_to(&self, end: &Self) -> Vec<f32> {
-        [
-            self.background.distance_to(&end.background),
-            self.text_color.distance_to(&end.text_color),
-            self.border.distance_to(&end.border),
-            self.shadow.distance_to(&end.shadow),
-        ]
-        .concat()
-    }
-
-    fn update(&mut self, components: &mut impl Iterator<Item = f32>) {
-        self.background.update(components);
-        self.text_color.update(components);
-        self.border.update(components);
-        self.shadow.update(components);
-    }
-}
-
-impl Animate for iced::widget::svg::Style {
-    fn components() -> usize {
-        Option::<iced::Color>::components()
-    }
-
-    fn distance_to(&self, end: &Self) -> Vec<f32> {
-        self.color.distance_to(&end.color)
-    }
-
-    fn update(&mut self, components: &mut impl Iterator<Item = f32>) {
-        self.color.update(components);
-    }
-}
-
-impl Animate for iced::widget::checkbox::Style {
-    fn components() -> usize {
-        iced::Background::components()
-            + iced::Color::components()
-            + iced::Border::components()
-            + Option::<iced::Color>::components()
-    }
-
-    fn distance_to(&self, end: &Self) -> Vec<f32> {
-        [
-            self.background.distance_to(&end.background),
-            self.icon_color.distance_to(&end.icon_color),
-            self.border.distance_to(&end.border),
-            self.text_color.distance_to(&end.text_color),
-        ]
-        .concat()
-    }
-
-    fn update(&mut self, components: &mut impl Iterator<Item = f32>) {
-        self.background.update(components);
-        self.icon_color.update(components);
-        self.border.update(components);
-        self.text_color.update(components);
-    }
-}
-
 impl<T1, T2> Animate for (T1, T2)
 where
     T1: Animate,
@@ -797,26 +731,5 @@ mod tests {
         background.update(&mut components);
         assert_ne!(background, iced::Background::Color(iced::Color::BLACK));
         assert_eq!(components.len(), 0);
-    }
-
-    #[test]
-    fn update_button_style() {
-        let style = iced::widget::button::Style {
-            background: Some(iced::Background::Color(iced::Color::BLACK)),
-            text_color: iced::Color::BLACK,
-            border: iced::Border::default(),
-            shadow: iced::Shadow::default(),
-        };
-        let target = iced::widget::button::Style {
-            background: Some(iced::Background::Color(iced::Color::WHITE)),
-            text_color: iced::Color::WHITE,
-            border: iced::Border::default().width(1.0),
-            shadow: iced::Shadow::default(),
-        };
-
-        let mut spring = crate::Spring::new(style);
-        spring.interrupt(target);
-        spring.tick(std::time::Instant::now());
-        assert_ne!(*spring.value(), style);
     }
 }

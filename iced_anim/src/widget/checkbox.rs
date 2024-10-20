@@ -15,7 +15,7 @@ use iced::{
     touch, window, Element, Length, Pixels, Rectangle, Size,
 };
 
-use crate::SpringMotion;
+use crate::{Animate, SpringMotion};
 
 use super::AnimatedState;
 pub use iced::widget::checkbox::{
@@ -449,4 +449,30 @@ where
     Renderer: text::Renderer,
 {
     Checkbox::new(label, is_checked)
+}
+
+impl Animate for iced::widget::checkbox::Style {
+    fn components() -> usize {
+        iced::Background::components()
+            + iced::Color::components()
+            + iced::Border::components()
+            + Option::<iced::Color>::components()
+    }
+
+    fn distance_to(&self, end: &Self) -> Vec<f32> {
+        [
+            self.background.distance_to(&end.background),
+            self.icon_color.distance_to(&end.icon_color),
+            self.border.distance_to(&end.border),
+            self.text_color.distance_to(&end.text_color),
+        ]
+        .concat()
+    }
+
+    fn update(&mut self, components: &mut impl Iterator<Item = f32>) {
+        self.background.update(components);
+        self.icon_color.update(components);
+        self.border.update(components);
+        self.text_color.update(components);
+    }
 }
